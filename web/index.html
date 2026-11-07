@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Juuri · Climate & Nature Navigator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%232f6f4f'/><path d='M16 6v14M16 20c-4 0-6 3-7 6M16 20c4 0 6 3 7 6M16 20v7' stroke='white' stroke-width='2.2' fill='none' stroke-linecap='round'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#2f6f4f"/><path d="M16 6v14M16 20c-4 0-6 3-7 6M16 20c4 0 6 3 7 6M16 20v7" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+      <div><div class="brand-name">Juuri</div><div class="brand-tag" data-i18n="app.tagline"></div></div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="sidebar-foot" data-i18n="app.synthetic"></div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu" id="menuBtn" aria-label="Menu">☰</button>
+      <div id="statusBadge"></div>
+      <div class="spacer"></div>
+      <label class="ctl"><span data-i18n="policy.label"></span>
+        <select id="policySel"><option value="provisional" data-i18n="policy.provisional"></option><option value="strict" data-i18n="policy.strict"></option></select>
+      </label>
+      <div class="lang" id="langSwitch">
+        <button data-lang="fi">FI</button><button data-lang="sv">SV</button><button data-lang="en">EN</button>
+      </div>
+    </header>
+    <main id="view" class="view"></main>
+  </div>
+  <button class="chat-fab" id="chatFab" aria-label="Assistant">💬</button>
+  <section class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-head"><strong data-i18n="assistant.title"></strong><span class="spacer"></span>
+      <button class="icon-btn" id="drawerExpand" title="⤢">⤢</button><button class="icon-btn" id="drawerClose">✕</button></div>
+    <div id="drawerChat" class="chat compact"></div>
+  </section>
+  <div id="toast" class="toast"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -3,3 +3,12 @@ Data/Briefing.m4a
 
 # macOS
 .DS_Store
+
+# Python / local environment
+.venv/
+__pycache__/
+*.pyc
+
+# Unzipped data package and generated outputs (reproduce with `python -m juuri setup && python -m juuri run`)
+package/
+outputs/
