@@ -1,0 +1,35 @@
+# Juuri live context layer: Orion-LD (NGSI-LD context broker) + MongoDB.
+#   docker compose -f fiware/docker-compose.yml up -d      (or: python -m juuri fiware up)
+# Orion-LD publishes amd64 images only; on Apple silicon Docker runs them under emulation.
+name: juuri-fiware
+services:
+  mongo-db:
+    image: mongo:4.4
+    command: --nojournal
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      retries: 20
+
+  orion-ld:
+    image: fiware/orion-ld@sha256:ee3eec931379eac582a55acd04021183fe9ee700f2ecbd995d817c08971018cb   # 1.15.0-next, 2026-09-24
+    platform: linux/amd64
+    hostname: orion-ld   # stable host part in URLs of contexts hosted by the broker
+    command: -dbhost mongo-db -logLevel WARN -notificationMode threadpool:5000:8 -httpTimeout 10000
+    depends_on:
+      mongo-db:
+        condition: service_healthy
+    ports:
+      - "1026:1026"
+    # Lets the broker deliver subscription notifications to Juuri's listener running on the host.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:1026/ngsi-ld/ex/v1/version"]
+      interval: 5s
+      retries: 30
+
+volumes:
+  mongo-data:

@@ -1,0 +1,222 @@
+{
+  "lever": {
+    "L01": {
+      "fi": "Biokaasun saatavuus LNG/LPG-varapolttoaineen korvaamiseksi Säkylässä",
+      "sv": "Säkra biogas för att ersätta LNG/LPG som reserv i Säkylä"
+    },
+    "L02": {
+      "fi": "Sähkötrukit ja piha-ajoneuvot (LPG:n/dieselin tilalle)",
+      "sv": "Eltruckar och gårdsfordon (ersätter LPG/diesel)"
+    },
+    "L03": {
+      "fi": "R404A-kylmävaraston korvaaminen ammoniakki/CO2-järjestelmällä",
+      "sv": "Ersätt R404A-kyllager med ammoniak/CO2-system"
+    },
+    "L04": {
+      "fi": "Kylmäainevuotojen tunnistus ja ennakoiva huolto",
+      "sv": "Läckagedetektering och förebyggande underhåll av köldmedier"
+    },
+    "L05": {
+      "fi": "Kantvikin höyry energiakumppanilta (rakenteellinen, biogeeninen)",
+      "sv": "Ånga i Kantvik från energipartner (strukturell, biogen)"
+    },
+    "L06": {
+      "fi": "Lämmöntalteenotto öljynjalostuksesta Kantvikissa",
+      "sv": "Värmeåtervinning från oljeprocessen i Kantvik"
+    },
+    "L07": {
+      "fi": "Bjuv: maakaasusta biokaasuun",
+      "sv": "Bjuv: från naturgas till biogas"
+    },
+    "L08": {
+      "fi": "Vähähiilinen typpilannoite sopimusviljelijöille (FI + SE)",
+      "sv": "Kvävegödsel med lågt koldioxidavtryck för kontraktsodlare (FI + SE)"
+    },
+    "L09": {
+      "fi": "Täsmälannoitus ja maaperätestausohjelma",
+      "sv": "Precisions- och variabel kvävegödsling samt markkartering"
+    },
+    "L10": {
+      "fi": "Kerääjäkasvit aikaisin korjattujen kasvien jälkeen (herne, pinaatti)",
+      "sv": "Fånggrödor efter tidigt skördade grödor (ärt, spenat)"
+    },
+    "L11": {
+      "fi": "Sopimusalan siirto pois ojitetuilta turvemailta",
+      "sv": "Flytta kontraktsarealen bort från dikade torvjordar"
+    },
+    "L12": {
+      "fi": "Uudelleenvettämisen / märkäviljelyn pilotti poistetuilla turvelohkoilla",
+      "sv": "Pilot för återvätning / våtmarksodling på avvecklade torvskiften"
+    },
+    "L13": {
+      "fi": "Rapsitoimittajien sitouttaminen: primääriset PCF:t + vähähiilinen lannoite",
+      "sv": "Leverantörssamarbete för raps: primära PCF:er + kvävegödsel med lågt avtryck"
+    },
+    "L14": {
+      "fi": "Tuontirapsin alkuperän optimointi (pienemmän päästökertoimen alkuperät)",
+      "sv": "Ursprungsoptimering för importerad raps (ursprung med lägre emissionsfaktor)"
+    },
+    "L15": {
+      "fi": "Kotimaisen rypsin osuuden kasvattaminen (viljelijäohjelma)",
+      "sv": "Öka andelen finsk raps/rybs (odlarprogram)"
+    },
+    "L16": {
+      "fi": "Pizzareseptit: vähemmän juustoa ja lihaa (kasvipohjaiset vaihtoehdot)",
+      "sv": "Pizzarecept: mindre ost och kött (växtbaserade alternativ)"
+    },
+    "L17": {
+      "fi": "Tuontisoijaisolaatin korvaaminen kotimaisella härkäpapuproteiinilla",
+      "sv": "Ersätt importerat sojaproteinisolat med finskt åkerbönsprotein"
+    },
+    "L18": {
+      "fi": "50 % rPET-pullot ja kevyemmät korkit",
+      "sv": "Flaskor med 50 % rPET och lättare kapsyler"
+    },
+    "L19": {
+      "fi": "Monomateriaalinen, ohuempi pakastepakkauskalvo",
+      "sv": "Monomaterial och tunnare förpackningsfilm för fryst"
+    },
+    "L20": {
+      "fi": "HVO100 hankinta- ja jakelukuljetuksiin",
+      "sv": "HVO100 för in- och utleveranstransporter"
+    },
+    "L21": {
+      "fi": "Kuljetusmuodon muutos: tuontisiemen täysiin laivalasteihin / rautatielle",
+      "sv": "Trafikslagsbyte: importerat utsäde i fulla fartygslaster / järnväg"
+    },
+    "L22": {
+      "fi": "Pakasteketju −18 °C:sta −15 °C:seen (toimialakoalitio)",
+      "sv": "Frysked från −18 °C till −15 °C (branschkoalition)"
+    },
+    "L23": {
+      "fi": "Vastaanottohylkäysten vähentäminen (korjuuajoitusmallit, tenderometri-AI)",
+      "sv": "Minska kassationer vid mottagning (skördetidsmodeller, tenderometer-AI)"
+    },
+    "L24": {
+      "fi": "Kastelun ajoitus ja tihkukastelu porkkanalle/perunalle",
+      "sv": "Bevattningsstyrning och droppbevattning för morot/potatis"
+    },
+    "L25": {
+      "fi": "Uusiutuvan sähkön vaatimus toimittajille (pakkaukset ja raaka-aineet)",
+      "sv": "Krav på förnybar el hos leverantörer (förpackningar och ingredienser)"
+    },
+    "L26": {
+      "fi": "Pudasjärven sulkeminen ja sopimusvalmistus (rakenteellinen)",
+      "sv": "Nedläggning i Pudasjärvi och kontraktstillverkning (strukturell)"
+    },
+    "L27": {
+      "fi": "Kulutusperusteisesta toimittajakohtaiseen dataan (mittauksen parannus, ei vähennys)",
+      "sv": "Från utgiftsbaserade till leverantörsspecifika data (mätförbättring, ingen minskning)"
+    },
+    "L28": {
+      "fi": "Työmatkapolitiikka (juna ensin, etäkokoukset)",
+      "sv": "Resepolicy (tåg först, digitala möten)"
+    },
+    "L29": {
+      "fi": "Työmatkat: vuorobussi Säkylään, sähköautojen lataus",
+      "sv": "Pendling: skiftbuss till Säkylä, laddning för elbilar"
+    },
+    "L30": {
+      "fi": "Biojäte biokaasuksi ja mädätysjäännös takaisin viljelijöille",
+      "sv": "Bioavfall till biogas med rötrest tillbaka till odlarna"
+    }
+  },
+  "owner": {
+    "Plant managers + energy partner": {
+      "fi": "Tehtaanjohtajat + energiakumppani",
+      "sv": "Platschefer + energipartner"
+    },
+    "Plant maintenance": {
+      "fi": "Tehtaan kunnossapito",
+      "sv": "Underhåll"
+    },
+    "Farming services (field advisors)": {
+      "fi": "Viljelypalvelut (kenttäneuvojat)",
+      "sv": "Odlingstjänster (fältrådgivare)"
+    },
+    "Farming services + sourcing": {
+      "fi": "Viljelypalvelut + hankinta",
+      "sv": "Odlingstjänster + inköp"
+    },
+    "Procurement": {
+      "fi": "Hankinta",
+      "sv": "Inköp"
+    },
+    "R&D / product development": {
+      "fi": "T&K / tuotekehitys",
+      "sv": "FoU / produktutveckling"
+    },
+    "Packaging development": {
+      "fi": "Pakkauskehitys",
+      "sv": "Förpackningsutveckling"
+    },
+    "Logistics": {
+      "fi": "Logistiikka",
+      "sv": "Logistik"
+    },
+    "Supply chain + sales": {
+      "fi": "Toimitusketju + myynti",
+      "sv": "Försörjningskedja + försäljning"
+    },
+    "Production + farming services": {
+      "fi": "Tuotanto + viljelypalvelut",
+      "sv": "Produktion + odlingstjänster"
+    },
+    "HR": {
+      "fi": "Henkilöstöhallinto",
+      "sv": "HR"
+    },
+    "HR + Säkylä site": {
+      "fi": "Henkilöstöhallinto + Säkylän tehdas",
+      "sv": "HR + anläggningen i Säkylä"
+    },
+    "Plant managers": {
+      "fi": "Tehtaanjohtajat",
+      "sv": "Platschefer"
+    },
+    "Sustainability team": {
+      "fi": "Vastuullisuustiimi",
+      "sv": "Hållbarhetsteamet"
+    },
+    "Management": {
+      "fi": "Johto",
+      "sv": "Ledningen"
+    }
+  },
+  "confidence": {
+    "high": {
+      "fi": "korkea",
+      "sv": "hög"
+    },
+    "medium": {
+      "fi": "keskitaso",
+      "sv": "medel"
+    },
+    "low": {
+      "fi": "matala",
+      "sv": "låg"
+    }
+  },
+  "action": {
+    "Add buffer strip (L09/L10)": {
+      "fi": "Lisää suojakaista (L09/L10)",
+      "sv": "Anlägg skyddszon (L09/L10)"
+    },
+    "Reduce P fertilisation; soil-P is high (L09)": {
+      "fi": "Vähennä fosforilannoitusta; maan P-luku on korkea (L09)",
+      "sv": "Minska fosforgödslingen; markens P-tal är högt (L09)"
+    },
+    "Catch crop after harvest (L10)": {
+      "fi": "Kerääjäkasvi sadonkorjuun jälkeen (L10)",
+      "sv": "Fånggröda efter skörd (L10)"
+    },
+    "Reduced tillage / winter cover on slope": {
+      "fi": "Kevennetty muokkaus / talviaikainen kasvipeite rinteessä",
+      "sv": "Reducerad bearbetning / vintergrönt på sluttning"
+    },
+    "Monitor": {
+      "fi": "Seuraa",
+      "sv": "Följ upp"
+    }
+  }
+}
