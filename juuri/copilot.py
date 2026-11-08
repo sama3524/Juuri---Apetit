@@ -33,7 +33,8 @@ MODEL = "claude-opus-5-5"
 # ------------------------------------------------------------------------------ document search
 @lru_cache(maxsize=1)
 def _chunks() -> list[dict]:
-    files = [C.DATA / "07_frameworks" / "framework_digest.md"] + sorted((C.PACKAGE_ROOT / "docs").glob("*.md"))
+    from . import store
+    files = [store.path("07_frameworks/framework_digest.md")] + sorted((C.PACKAGE_ROOT / "docs").glob("*.md"))
     out = []
     for f in files:
         text = f.read_text()
@@ -42,7 +43,7 @@ def _chunks() -> list[dict]:
             title = p.strip().splitlines()[0].lstrip("# ").strip() if p.strip() else ""
             for j, para in enumerate(re.split(r"\n(?=\* \*\*)", p)):
                 if len(para.strip()) > 40:
-                    out.append(dict(source=str(f.relative_to(C.PACKAGE_ROOT)), section=title, text=para.strip()))
+                    out.append(dict(source=str(f.relative_to(C.PACKAGE_ROOT) if C.PACKAGE_ROOT in f.parents else f.relative_to(C.REPO_ROOT)), section=title, text=para.strip()))
     return out
 
 

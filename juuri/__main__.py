@@ -5,6 +5,10 @@
     python -m juuri score      # score the pipeline on the public dev answer keys (2023-2024 etc.)
     python -m juuri serve      # start the Juuri web product at http://localhost:8000
     python -m juuri fiware up|load|listen|simulate|demo|status|down   # FIWARE live context layer
+    python -m juuri ingest <file-or-folder> --source "..."   # store a new data delivery (validated, append-only)
+    python -m juuri deliveries | snapshots                   # list data deliveries / frozen snapshots
+    python -m juuri freeze <label> [--year 2025] [--policy strict|provisional]   # freeze reported figures
+    python -m juuri compare <label>                          # reported vs recalculated now (5 % threshold)
 """
 from __future__ import annotations
 
@@ -117,6 +121,11 @@ def serve():
     uvicorn.run("juuri.api:app", host="127.0.0.1", port=port, log_level="warning")
 
 
+def store_cmd():
+    from . import store
+    store.main(sys.argv[1:])
+
+
 def fiware():
     from . import fiware as FW
     FW.main(sys.argv[2:])
@@ -124,4 +133,5 @@ def fiware():
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "run"
-    {"setup": setup, "run": run, "score": score, "serve": serve, "fiware": fiware}.get(cmd, lambda: sys.exit(__doc__))()
+    {"setup": setup, "run": run, "score": score, "serve": serve, "fiware": fiware,
+     **{k: store_cmd for k in ("ingest", "deliveries", "freeze", "snapshots", "compare")}}.get(cmd, lambda: sys.exit(__doc__))()

@@ -11,9 +11,16 @@ C.use_reference_tools()
 from ccn_tools import io as ccn_io  # noqa: E402
 
 
-@lru_cache(maxsize=1)
 def raw() -> dict:
-    """All raw tables (dict of DataFrames). Cached; treat as read-only."""
+    """Effective raw tables: the package baseline overlaid by all ingested deliveries (see store.py).
+    Cached per data fingerprint; treat as read-only."""
+    from . import store
+    return _raw(store.fingerprint())
+
+
+@lru_cache(maxsize=2)
+def _raw(data_fingerprint: str) -> dict:
+    from . import store
     C.ensure_package()
     r = ccn_io.load_raw(C.PACKAGE_ROOT)
     d = C.DATA
@@ -33,6 +40,7 @@ def raw() -> dict:
     r["climate_cells"] = pd.read_csv(d / "01_master" / "climate_grid_cells.csv")
     r["water"] = pd.read_csv(d / "02_raw_feeds" / "water_balance.csv")
     r["source_registry"] = pd.read_csv(d / "07_frameworks" / "source_registry.csv")
+    store.apply_deliveries(r)
     add_record_keys(r)
     return r
 

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Juuri overview</title>
+<style>
+  :root {
+    --bg: #f6f4ee; --ink: #1d2a24; --muted: #5d6b63; --line: #d9d4c7; --card: #ffffff;
+    --green: #2f6b4f; --green-soft: #e3efe7; --amber: #b7791f; --amber-soft: #f8ecd6;
+    --blue: #2b6cb0; --blue-soft: #e2ecf7; --red: #b23a48; --red-soft: #f6e2e5; --violet: #6b4fa0; --violet-soft: #ece6f6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; padding: 48px 56px 40px; display: flex; flex-direction: column; justify-content: space-between; }
+  header { display: flex; align-items: flex-end; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 20px; }
+  .logo { width: 64px; height: 64px; }
+  h1 { font-size: 52px; letter-spacing: -1px; line-height: 1; }
+  h1 span { color: var(--muted); font-weight: 400; font-size: 26px; letter-spacing: 0; margin-left: 10px; }
+  .tag { font-size: 23px; color: var(--muted); margin-top: 8px; }
+  .for { text-align: right; font-size: 17px; color: var(--muted); line-height: 1.5; }
+  .for b { color: var(--ink); }
+
+  .band { display: grid; grid-template-columns: 150px 1fr; gap: 18px; align-items: stretch; }
+  .label { display: flex; flex-direction: column; justify-content: center; border-right: 3px solid var(--line); padding-right: 14px; }
+  .label .n { font-size: 15px; font-weight: 700; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+  .label .t { font-size: 30px; font-weight: 800; letter-spacing: -.5px; }
+  .row { display: grid; gap: 16px; }
+  .pipe { grid-template-columns: 1fr 34px 1fr 34px 1fr 34px 1fr; align-items: stretch; }
+  .arrow { display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 30px; font-weight: 300; }
+  .three { grid-template-columns: repeat(3, 1fr); }
+  .four { grid-template-columns: repeat(4, 1fr); }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px 18px; min-height: 218px; display: flex; flex-direction: column; gap: 7px; border-top: 6px solid var(--accent); }
+  .card h3 { font-size: 22px; display: flex; align-items: center; gap: 10px; }
+  .card h3 .ic { width: 32px; height: 32px; border-radius: 8px; background: var(--soft); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex: none; }
+  .card p { font-size: 16.5px; line-height: 1.38; color: var(--muted); }
+  .stat { margin-top: auto; padding-top: 6px; font-size: 17px; color: var(--ink); line-height: 1.3; }
+  .stat b { font-size: 23px; color: var(--accent); letter-spacing: -.3px; }
+  .g { --accent: var(--green); --soft: var(--green-soft); }
+  .a { --accent: var(--amber); --soft: var(--amber-soft); }
+  .b { --accent: var(--blue); --soft: var(--blue-soft); }
+  .r { --accent: var(--red); --soft: var(--red-soft); }
+  .v { --accent: var(--violet); --soft: var(--violet-soft); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font-size: 13.5px; padding: 3px 9px; border-radius: 999px; background: var(--soft); color: var(--accent); font-weight: 600; }
+
+  .value { display: grid; grid-template-columns: 150px repeat(4, 1fr); gap: 18px; background: var(--green); color: #fff; border-radius: 16px; padding: 18px 24px; align-items: center; }
+  .value .lbl { font-size: 30px; font-weight: 800; line-height: 1.05; }
+  .value .lbl small { display: block; font-size: 14px; font-weight: 500; opacity: .8; margin-top: 4px; }
+  .kv b { display: block; font-size: 30px; letter-spacing: -.5px; }
+  .kv span { font-size: 16px; opacity: .88; }
+  footer { font-size: 13.5px; color: var(--muted); display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <rect width="64" height="64" rx="14" fill="#2f6b4f"/>
+        <path d="M32 12v22" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+        <path d="M32 22c-6-6-12-6-14-4 2 6 8 8 14 6M32 20c6-6 12-6 14-4-2 6-8 8-14 6" fill="#9fd3b4"/>
+        <path d="M32 34c0 6-8 8-12 16M32 34c0 6 8 8 12 16M32 34v18" stroke="#f6e7c1" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>Juuri <span>Finnish for “root”</span></h1>
+        <div class="tag">From fragmented raw data to climate and nature decisions you can trace</div>
+      </div>
+    </div>
+    <div class="for">Built for <b>Apetit</b> · Since AI hackathon 2026<br>Climate &amp; Nature Navigator challenge</div>
+  </header>
+
+  <!-- 1 Pipeline -->
+  <section class="band">
+    <div class="label"><span class="n">Step 1</span><span class="t">Trusted data</span></div>
+    <div class="row pipe">
+      <div class="card g"><h3><span class="ic">1</span>Ingest</h3>
+        <p>Exports from ERP, energy meters, farm surveys, shipments, waste and weather arrive as checked deliveries.</p>
+        <div class="stat">Checked on arrival<br><b>Never overwritten</b></div></div>
+      <div class="arrow">→</div>
+      <div class="card g"><h3><span class="ic">2</span>AI data-quality agent</h3>
+        <p>Finds unit errors, duplicates and meter spikes, proposes a fix with evidence. A person approves every fix.</p>
+        <div class="stat"><b>754</b> issues found<br>Scope 1 <b>132,163 → 4,414 t</b></div></div>
+      <div class="arrow">→</div>
+      <div class="card g"><h3><span class="ic">3</span>GHG inventory</h3>
+        <p>GHG Protocol, Scope 1–3, AR6 factors and a FLAG split, recalculated automatically from reviewed data.</p>
+        <div class="stat">Land &amp; farming (FLAG):<br><b>70%</b> of the total</div></div>
+      <div class="arrow">→</div>
+      <div class="card g"><h3><span class="ic">4</span>Audit trail</h3>
+        <p>Click any number to see the source records, emission factors and corrections behind it.</p>
+        <div class="stat">Peat soils: <b>5%</b> of fields,<br><b>57%</b> of farm emissions</div></div>
+    </div>
+  </section>
+
+  <!-- 2 Decide -->
+  <section class="band">
+    <div class="label"><span class="n">Step 2</span><span class="t">Decisions</span></div>
+    <div class="row three">
+      <div class="card a"><h3><span class="ic">◎</span>Targets &amp; action plan</h3>
+        <p>SBTi near-term targets for Scope 1+2, Scope 3 and FLAG. Actions ranked from cheapest to most expensive, with the remaining gap.</p>
+        <div class="stat">FLAG 2032: <b>~14,000 t</b> still short after all actions</div></div>
+      <div class="card r"><h3><span class="ic">☂</span>Climate risk to farming</h3>
+        <p>Yield model trained on farm yields and daily weather, projected to 2060 under three warming scenarios, with € exposure.</p>
+        <div class="stat">Turnip rape <b>−12%</b> · carrot <b>~€600k / yr</b> at risk</div></div>
+      <div class="card b"><h3><span class="ic">≈</span>Nature impacts (SBTN)</h3>
+        <p>Phosphorus and nitrogen from every field to rivers and lakes, catchments ranked by pressure × water status, advisor actions per field.</p>
+        <div class="stat"><b>CA12</b> first · field-by-field action list</div></div>
+    </div>
+  </section>
+
+  <!-- 3 Use -->
+  <section class="band">
+    <div class="label"><span class="n">Step 3</span><span class="t">Everyday use</span></div>
+    <div class="row four">
+      <div class="card v"><h3><span class="ic">?</span>AI assistant</h3>
+        <p>Ask questions in plain language and get answers from the reviewed data, with sources cited.</p>
+        <div class="chips"><span class="chip">Suomi</span><span class="chip">Svenska</span><span class="chip">English</span></div></div>
+      <div class="card v"><h3><span class="ic">▤</span>Reports on request</h3>
+        <p>Board, executive, farm and catchment reports, or a custom one from your question. Tables and charts, ready to print.</p>
+        <div class="stat">Print / PDF · Markdown</div></div>
+      <div class="card b"><h3><span class="ic">↯</span>Live data · FIWARE</h3>
+        <p>Orion-LD context broker with NGSI-LD Smart Data Models. Juuri reacts to each update: flags bad readings, updates drought alerts.</p>
+        <div class="chips"><span class="chip">Orion-LD</span><span class="chip">NGSI-LD</span><span class="chip">Smart Data Models</span></div></div>
+      <div class="card g"><h3><span class="ic">⟲</span>Data history</h3>
+        <p>Every delivery is kept, reported figures are frozen as snapshots, and changes above the 5%&nbsp;restatement threshold are flagged.</p>
+        <div class="stat">Past reports stay <b>reproducible</b></div></div>
+    </div>
+  </section>
+
+  <!-- Value -->
+  <section class="value">
+    <div class="lbl">Value<small>estimates for Apetit</small></div>
+    <div class="kv"><b>2 months → 2 weeks</b><span>annual GHG inventory</span></div>
+    <div class="kv"><b>Weeks → minutes</b><span>base-year recalculation</span></div>
+    <div class="kv"><b>Days → seconds</b><span>board and customer reports</span></div>
+    <div class="kv"><b>Audit-ready</b><span>every number traced, every fix approved</span></div>
+  </section>
+
+  <footer>
+    <span>All figures from the synthetic Apetit data twin provided by Since AI (2025 inventory, provisional corrections) — not Apetit's real emissions.</span>
+    <span>Python · FastAPI · Claude · FIWARE Orion-LD</span>
+  </footer>
+</body>
+</html>

@@ -7,7 +7,9 @@ from __future__ import annotations
 import json
 import math
 import threading
+import time
 import warnings
+from pathlib import Path
 from typing import Optional
 
 warnings.filterwarnings("ignore")
@@ -88,6 +90,12 @@ def warm():
             CL.backtest(2019)
         except Exception as e:  # noqa: BLE001
             print("warm-up failed:", e)
+        try:
+            from . import fiware as FW
+            if FW.Broker().alive():
+                print("FIWARE listener:", ensure_listener())
+        except Exception as e:  # noqa: BLE001
+            print("FIWARE listener not started:", e)
     threading.Thread(target=_w, daemon=True).start()
 
 
@@ -337,15 +345,105 @@ def live_decision(d: LiveDecision):
     return J(dict(saved=len(d.ids)))
 
 
+# The notification listener runs inside the web server, so the live page works without a second terminal.
+# If another process already listens on the port (``python -m juuri fiware listen``), that one is used.
+_LIVE: dict = dict(engine=None, thread=None, next_start=None, meter_month=None)
+SEASON_END = pd.Timestamp("2026-08-31")
+
+
+def _port_free(port: int) -> bool:
+    import socket
+    with socket.socket() as s:
+        try:
+            s.bind(("0.0.0.0", port))
+            return True
+        except OSError:
+            return False
+
+
+def ensure_listener() -> str:
+    from . import fiware as FW
+    if _LIVE["thread"] is not None and _LIVE["thread"].is_alive():
+        return "embedded"
+    if not _port_free(FW.LISTEN_PORT):
+        return "external"
+    _LIVE["engine"] = FW.LiveEngine()
+    _LIVE["thread"] = threading.Thread(target=FW.listen, kwargs=dict(engine=_LIVE["engine"]), daemon=True)
+    _LIVE["thread"].start()
+    time.sleep(0.5)
+    return "embedded"
+
+
+def _wait_for_listener(before: int, timeout: float = 20.0):
+    """Notifications are asynchronous: wait until the listener's event log stops growing."""
+    from . import fiware as FW
+    f = FW.LIVE_DIR / "events.jsonl"
+    size, stable, t0 = -1, 0, time.time()
+    while time.time() - t0 < timeout:
+        now = f.stat().st_size if f.exists() else 0
+        stable = stable + 1 if (now == size and now > before) else 0
+        if stable >= 3:
+            return
+        size = now
+        time.sleep(0.4)
+
+
 @app.post("/api/live/advance")
 def live_advance(days: int = 7):
+    """Simulate the next week: daily weather from every station plus the next monthly meter export."""
     from . import fiware as FW
     b = FW.Broker()
-    wo = b.query("WeatherObserved", attrs="dateObserved", limit=200)
-    last = max((w.get("dateObserved") for w in wo if w.get("dateObserved")), default=None)
-    start = (pd.Timestamp(last).tz_localize(None) + pd.Timedelta(days=1)).strftime("%Y-%m-%d") if last else "2026-05-01"
-    FW.simulate(days=min(days, 31), start=start, meters=False, b=b)
-    return J(dict(start=start, days=days))
+    if not b.alive():
+        raise HTTPException(503, "FIWARE broker is not running")
+    mode = ensure_listener()
+    if _LIVE["next_start"] is None:
+        wo = b.query("WeatherObserved", attrs="dateObserved", limit=200)
+        last = max((w.get("dateObserved") for w in wo if w.get("dateObserved")), default=None)
+        _LIVE["next_start"] = (pd.Timestamp(last).tz_localize(None) + pd.Timedelta(days=1)) if last else pd.Timestamp("2026-05-01")
+    if _LIVE["meter_month"] is None:
+        dm = b.query("DeviceMeasurement", attrs="dateObserved", limit=500)
+        last_m = max((d.get("dateObserved") for d in dm if d.get("dateObserved")), default=None)
+        _LIVE["meter_month"] = pd.Timestamp(last_m).month if last_m else 0
+    start = _LIVE["next_start"]
+    if start > SEASON_END:
+        return J(dict(done=True, start=str(start.date()), listener=mode))
+    days = max(1, min(days, 31, (SEASON_END - start).days + 1))
+    issues_before = {i["id"] for i in b.query("DataQualityIssue", limit=500)}
+    log = FW.LIVE_DIR / "events.jsonl"
+    log_before = log.stat().st_size if log.exists() else 0
+    FW.simulate(days=days, start=start.strftime("%Y-%m-%d"), meters=False, b=b, pace=0.008)
+    meter_month = None
+    if _LIVE["meter_month"] < 12:
+        meter_month = _LIVE["meter_month"] + 1
+        FW.replay_meter_month(meter_month, b, pace=0.01)
+        _LIVE["meter_month"] = meter_month
+    _LIVE["next_start"] = start + pd.Timedelta(days=days)
+    _wait_for_listener(log_before)
+    new = [i for i in b.query("DataQualityIssue", limit=500) if i["id"] not in issues_before]
+    return J(dict(start=str(start.date()), end=str((start + pd.Timedelta(days=days - 1)).date()), meter_month=meter_month,
+                  new_issues=len(new), drought_alerts=FW.status(b)["drought_alerts"], listener=mode))
+
+
+@app.post("/api/live/reset")
+def live_reset():
+    """Rewind the live demo to 1 May 2026: clear live data-quality issues and parcel drought state."""
+    from . import fiware as FW
+    b = FW.Broker()
+    if not b.alive():
+        raise HTTPException(503, "FIWARE broker is not running")
+    mode = ensure_listener()
+    for i in b.query("DataQualityIssue", limit=1000):
+        b.delete(i["id"])
+    eng = _LIVE["engine"]
+    if eng is not None:
+        with eng.lock:
+            eng.cells.clear()
+            eng.last_alert.clear()
+    parcels = b.query("AgriParcel", attrs="droughtAlert", limit=5000)
+    b.upsert([{"id": p["id"], "type": "AgriParcel", "droughtAlert": FW.prop("none"), "waterDeficitToDate": FW.prop(0.0, "MMT"),
+               "expectedYieldImpact": FW.prop(0.0, "P1")} for p in parcels], update_only=True)
+    _LIVE["next_start"], _LIVE["meter_month"] = pd.Timestamp("2026-05-01"), 0
+    return J(dict(reset=True, listener=mode))
 
 
 # ------------------------------------------------------------------------------ assistant & reports
@@ -405,6 +503,19 @@ def report_md(rid: str):
         raise HTTPException(404, "report not found")
     return PlainTextResponse(R.render_md(rep), media_type="text/markdown; charset=utf-8",
                              headers={"Content-Disposition": f'attachment; filename="juuri-{rep["kind"]}-{rid}.md"'})
+
+
+# ------------------------------------------------------------------------------ data history
+@app.get("/api/store")
+def store_info():
+    from . import store
+    store.refresh()
+    ds = [dict(delivery_id=d["delivery_id"], received_at=d["received_at"], source=d.get("source", ""),
+               files=", ".join(Path(f["path"]).name for f in d["files"]),
+               records=sum(f.get("rows", 0) for f in d["files"])) for d in store.deliveries()]
+    ss = [dict(label=s["label"], created=s["created"], year=s["reporting_year"], status=s["status"], policy=s["policy"],
+               scope1=s["totals"]["scope1"], scope2_market=s["totals"]["scope2_market"], scope3=s["totals"]["scope3"]) for s in store.snapshots()]
+    return J(dict(deliveries=ds, snapshots=ss))
 
 
 # ------------------------------------------------------------------------------ method

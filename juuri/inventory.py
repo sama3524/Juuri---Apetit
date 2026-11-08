@@ -32,14 +32,16 @@ CATEGORY_LABEL = {
 
 
 @lru_cache(maxsize=4)
-def _canonical(policy: str, decisions_mtime: float) -> dict:
+def _canonical(policy: str, decisions_mtime: float, data_fingerprint: str = "") -> dict:
     return K.build(policy)
 
 
 def canonical(policy: str = "provisional") -> dict:
-    """Silver tables; rebuilt automatically when a reviewer records a new decision."""
+    """Silver tables; rebuilt automatically when a reviewer records a new decision or a new data delivery arrives."""
+    from . import store
+    store.refresh()
     mtime = C.DECISIONS_FILE.stat().st_mtime if C.DECISIONS_FILE.exists() else 0.0
-    return _canonical(policy, mtime)
+    return _canonical(policy, mtime, store.fingerprint())
 
 
 def line_items(T: dict, year: int) -> pd.DataFrame:

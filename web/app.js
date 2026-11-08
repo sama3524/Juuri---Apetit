@@ -31,7 +31,7 @@ function num(x, d = 0) { if (x === null || x === undefined || Number.isNaN(x)) r
 const tons = (x) => num(x, Math.abs(x) >= 10 ? 0 : 1) + " t";
 const pct = (x, d = 0) => num(x, d) + " %";
 const eur = (x) => new Intl.NumberFormat(LOCALE[S.lang], { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(x);
-function toast(msg) { const el = $("#toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 2600); }
+function toast(msg) { const el = $("#toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), Math.max(2600, msg.length * 60)); }
 async function api(path, opts = {}) {
   const r = await fetch(path, { headers: { "Content-Type": "application/json" }, ...opts });
   if (!r.ok) { let m = r.statusText; try { m = (await r.json()).detail || m; } catch (e) { /* ignore */ } throw new Error(m); }
@@ -318,7 +318,7 @@ async function renderInventory(v) {
     box.classList.remove("muted");
     box.innerHTML = `<p><strong>${esc(r.line_item)}</strong> · ${esc(tons(r.tco2e))} · <em>${esc(r.basis)}</em></p>` + help("help.lineage") + (x.n ? table([
       { k: "record_key", label: t("col.record") }, { k: "activity", label: t("col.activity"), num: true, d: 1 }, { k: "unit", label: t("col.unit") }, { k: "ef", label: t("col.ef"), num: true, d: 4 },
-      { k: "ef_source", label: t("col.ef_source") }, { k: "tco2e", label: t("col.emissions"), num: true, d: 2 }], x.records, { max: 300 }) + `<div class="ev">${x.n} → ${esc(tons(x.total))}</div>` : `<p class="muted">${esc(r.basis)}</p>`)
+      { k: "ef_source", label: t("col.ef_source") }, { k: "tco2e", label: t("col.emissions"), num: true, d: 2 }], x.records, { max: 300 }) + `<div class="ev">${esc(t("inventory.records_sum", { n: num(x.n), t: tons(x.total) }))}</div>` : `<p class="muted">${esc(r.basis)}</p>`)
       + (x.corrections.length ? `<h2 class="section">${esc(t("inventory.corrections"))}</h2>` + table([{ k: "record_key", label: t("quality.col.record") }, { k: "field", label: t("quality.col.field") },
         { k: "old_value", label: t("quality.col.old") }, { k: "new_value", label: t("quality.col.new") }, { k: "issue_type", label: t("quality.col.type"), f: (y) => esc(lbl("issue", y)) },
         { k: "status", label: t("quality.col.status"), f: (s) => statusPill(s) }], x.corrections, { max: 240 }) : "");
@@ -497,7 +497,7 @@ async function renderLive(v) {
       <div class="filters section"><label>${esc(t("quality.reviewer"))}<input type="text" id="lrev" value="${esc(localStorage.getItem("juuri.reviewer") || "")}"></label>
       <button class="btn" id="lap">${esc(t("quality.approve"))}</button><button class="btn danger" id="lrj">${esc(t("quality.reject"))}</button></div></div>
     <div class="card section"><h2>${esc(t("live.drought"))}</h2><p class="muted">${esc(d.last_observation || "")}</p><div id="dr"></div>
-      <div class="section"><button class="btn ghost" id="adv">▶ ${esc(t("live.advance"))}</button></div></div>`;
+      <div class="section"><button class="btn" id="adv">▶ ${esc(t("live.advance"))}</button> <button class="btn ghost" id="lreset">↺ ${esc(t("live.reset"))}</button></div></div>`;
   $("#subs").innerHTML = table([{ k: "id", label: t("col.subscription") }, { k: "status", label: t("col.sub_status") }, { k: "timesSent", label: t("col.sent"), num: true },
     { k: "lastSuccess", label: t("col.last"), f: (x) => esc((x || "–").replace("T", " ").slice(0, 19)) }], st.subscriptions);
   $("#li").innerHTML = table([{ k: "issueType", label: t("quality.col.type"), f: (x) => esc(lbl("issue", x)) }, { k: "recordKey", label: t("quality.col.record") },
@@ -515,13 +515,34 @@ async function renderLive(v) {
     toast(t("quality.saved", { n: sel.length })); route();
   };
   $("#lap").onclick = () => decide("approved"); $("#lrj").onclick = () => decide("rejected");
-  $("#adv").onclick = async () => { $("#adv").disabled = true; try { await api("/api/live/advance?days=7", { method: "POST" }); } catch (e) { toast(e.message); } route(); };
+  const busy = (on) => { $("#adv").disabled = on; $("#lreset").disabled = on; $("#adv").textContent = (on ? "⏳ " : "▶ ") + t("live.advance"); };
+  $("#adv").onclick = async () => {
+    busy(true);
+    try {
+      const r = await api("/api/live/advance?days=7", { method: "POST" });
+      const month = r.meter_month ? new Intl.DateTimeFormat(S.lang, { month: "long", year: "numeric" }).format(new Date(2025, r.meter_month - 1, 1)) : "–";
+      await route();
+      toast(r.done ? t("live.season_over") : t("live.advanced", { start: r.start, end: r.end, month, issues: r.new_issues }));
+    } catch (e) { toast(e.message); busy(false); }
+  };
+  $("#lreset").onclick = async () => {
+    busy(true);
+    try { await api("/api/live/reset", { method: "POST" }); await route(); toast(t("live.reset_done")); } catch (e) { toast(e.message); busy(false); }
+  };
 }
 
 /* ---------------------------------------------------------------- method */
 async function renderMethod(v) {
-  const d = await api("/api/method");
+  const [d, st] = await Promise.all([api("/api/method"), api("/api/store")]);
   v.innerHTML = `<h1>${esc(t("method.title"))}</h1>${d.scores ? `<div class="card"><h2>${esc(t("method.scores"))}</h2><pre>${esc(JSON.stringify(d.scores, null, 1))}</pre></div>` : ""}
+    <div class="card section"><h2>${esc(t("store.title"))}</h2>${help("store.help")}
+      <h2 class="section">${esc(t("store.deliveries"))}</h2>${st.deliveries.length ? table([{ k: "delivery_id", label: t("col.delivery") },
+        { k: "received_at", label: t("col.received"), f: (x) => esc(x.replace("T", " ")) }, { k: "source", label: t("col.source_sys") },
+        { k: "files", label: t("col.files") }, { k: "records", label: t("col.rows"), num: true }], st.deliveries) : `<p class="muted">${esc(t("store.none_d"))}</p>`}
+      <h2 class="section">${esc(t("store.snapshots"))}</h2>${st.snapshots.length ? table([{ k: "label", label: t("col.label") },
+        { k: "created", label: t("col.created"), f: (x) => esc(x.replace("T", " ")) }, { k: "year", label: t("col.year") },
+        { k: "status", label: t("col.rstatus") }, { k: "scope1", label: t("col.s1"), num: true }, { k: "scope2_market", label: t("col.s2"), num: true },
+        { k: "scope3", label: t("col.s3"), num: true }], st.snapshots) : `<p class="muted">${esc(t("store.none_s"))}</p>`}</div>
     <div class="card section method-body">${DOMPurify.sanitize(d.html)}</div><p class="ev"><a href="/api/docs" target="_blank">API (OpenAPI)</a></p>`;
 }
 

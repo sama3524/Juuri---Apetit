@@ -69,6 +69,22 @@ Reviewers approve or reject proposals one at a time, or in bulk by rule. Decisio
 
 The draft 2025 report shows Scope 1 as **132,163 t**. That is exactly what the uncorrected raw data gives, so the draft was built from uncorrected data. After review, Scope 1 is **4,414 t**.
 
+### Data history: new deliveries and frozen reported figures
+
+Raw data is never edited or overwritten:
+
+```bash
+python -m juuri ingest exports/energy_meter_readings.csv --source "Meter export Jan 2026"   # validate + store a delivery
+python -m juuri deliveries                                    # list deliveries
+python -m juuri freeze 2025-annual-report --year 2025         # freeze the figures as reported (read-only snapshot)
+python -m juuri compare 2025-annual-report                    # reported vs recalculated now; flags changes >= 5 %
+```
+
+- **Deliveries.** The data package is the baseline. Each new export is checked (file name, columns, keys and numeric values), fingerprinted and stored read-only under `raw/<delivery>/` with a manifest. Juuri reads the baseline overlaid by all deliveries: the newest delivery wins **record by record**, and every row keeps a `_delivery` tag, so lineage shows which delivery a number came from. New records go through the data-quality agent like everything else. In testing, a revised meter file with a tripled reading was flagged as a spike for review. No restart is needed; the next page load uses the new data.
+- **Snapshots.** `freeze` writes the inventory, lineage, audit log, decisions and targets to `snapshots/<label>/`, read-only. The manifest records the deliveries used, the decisions fingerprint, the emission-factor library checksum and the git commit. You can always answer *"what did we report, and why?"*.
+- **Compare.** `compare` recalculates the year with today's data and decisions and shows the change per total. It flags anything at or above the 5 % significance threshold, where a restatement or base-year recalculation may be needed.
+- In production the same layout maps to a Fabric Lakehouse (`Files/raw/<source>/<delivery>/`, Delta tables with time travel, protected snapshot folder). The **Method & sources** page lists deliveries and snapshots.
+
 ## Results on the public dev keys
 
 These are scores from `python -m juuri score`, using the package's own scorer.
@@ -125,12 +141,15 @@ juuri/                 platform package
   assistant.py         chat: Claude agent with report tools, or offline multilingual intent router
   reports.py           report engine: standard + custom reports, HTML (inline SVG charts) and Markdown
   i18n.py              translations and locale formatting (shared with the web app)
+  store.py             data deliveries (append-only, validated), frozen snapshots, compare
 web/                   single-page web app (no build step): index.html, app.js, styles.css
   i18n/                en.json, fi.json, sv.json (UI + report text), catalogue.json (lever/owner names)
 legacy/streamlit_app/  earlier Streamlit prototype, kept for reference only
 fiware/                docker-compose.yml (Orion-LD + MongoDB) and the FIWARE integration guide
 docs/METHOD_NOTE.md    one-page method note: sources, assumptions, limitations, review
 review/decisions.csv   reviewer decisions (created on first decision)
+raw/                   data deliveries (created by ingest; not in git)
+snapshots/             frozen reported figures (created by freeze)
 Data/                  challenge brief and data package zip (input)
 ```
 

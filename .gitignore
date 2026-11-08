@@ -1,14 +1,46 @@
-# Briefing recording
-Data/Briefing.m4a
-
-# macOS
-.DS_Store
-
-# Python / local environment
-.venv/
-__pycache__/
-*.pyc
+# Challenge material from Since AI / Apetit (data package zip, brief, briefing recording)
+Data/
 
 # Unzipped data package and generated outputs (reproduce with `python -m juuri setup && python -m juuri run`)
 package/
 outputs/
+
+# Data deliveries are raw data: store them in the data platform (e.g. Fabric), not in git
+raw/
+
+# Reviewer decisions are local working state, not source code
+review/
+
+# Demo video script, subtitles, sample delivery and deck assets (local only)
+demo/
+
+# Pitch deck exports and other documents
+*.pdf
+*.pptx
+*.docx
+*.m4a
+*.mp4
+*.mov
+
+# Third-party logo (Apetit) and images made from it
+docs/apetit_logo.png
+docs/juuri_apetit_*.png
+
+# Secrets and local configuration
+.env
+.env.*
+
+# Python / local environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+*.log
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

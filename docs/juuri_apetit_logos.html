@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Juuri × Apetit</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1920px; height: 1080px; }
+  body { font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; display: flex; align-items: center; justify-content: center;
+         background: var(--bg); color: var(--ink); }
+  body.dark { --bg: #01430d; --ink: #ffffff; --muted: rgba(255,255,255,.72); --rule: rgba(255,255,255,.35); --tile: #2f6b4f; }
+  body.light { --bg: #ffffff; --ink: #1d2a24; --muted: #5d6b63; --rule: #cfd6d1; --tile: #2f6b4f; }
+  .lockup { display: flex; flex-direction: column; align-items: center; gap: 48px; }
+  .row { display: flex; align-items: center; gap: 80px; }
+  .juuri { display: flex; align-items: center; gap: 26px; }
+  .juuri svg { width: 190px; height: 190px; }
+  .juuri .word { font-size: 168px; font-weight: 800; letter-spacing: -4px; line-height: 1; }
+  .x { font-size: 88px; font-weight: 200; color: var(--muted); }
+  .apetit { width: 452px; height: 214px; border-radius: 22px; background: url(apetit_logo.png) center / contain no-repeat #01430d; }
+  body.dark .apetit { border-radius: 0; }
+  .tag { font-size: 36px; color: var(--muted); letter-spacing: .3px; }
+</style></head>
+<body class="dark">
+  <div class="lockup">
+    <div class="row">
+      <div class="juuri">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect width="64" height="64" rx="14" fill="#2f6b4f"/>
+          <path d="M32 12v22" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+          <path d="M32 22c-6-6-12-6-14-4 2 6 8 8 14 6M32 20c6-6 12-6 14-4-2 6-8 8-14 6" fill="#9fd3b4"/>
+          <path d="M32 34c0 6-8 8-12 16M32 34c0 6 8 8 12 16M32 34v18" stroke="#f6e7c1" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="word">Juuri</span>
+      </div>
+      <span class="x">×</span>
+      <div class="apetit" role="img" aria-label="Apetit"></div>
+    </div>
+    <div class="tag">Climate &amp; Nature Navigator · Since AI hackathon 2026</div>
+  </div>
+<script>if (location.hash === "#light") document.body.className = "light";</script>
+</body></html>

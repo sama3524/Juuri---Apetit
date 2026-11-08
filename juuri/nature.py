@@ -219,4 +219,5 @@ def _why(r) -> str:
 
 @lru_cache(maxsize=1)
 def catchments_geojson() -> dict:
-    return json.loads((C.DATA / "06_nature" / "catchments.geojson").read_text())
+    from . import store
+    return json.loads(store.path("06_nature/catchments.geojson").read_text())

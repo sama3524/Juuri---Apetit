@@ -142,6 +142,9 @@ class Broker:
                 failed.append(dict(status=r.status_code, body=r.text[:500]))
         return dict(ok=ok, failed=failed)
 
+    def delete(self, eid: str) -> int:
+        return self.http.delete(f"{self.ngsi}/entities/{eid}", headers=self._h(json_body=False)).status_code
+
     def patch(self, eid: str, attrs: dict) -> int:
         return self.http.patch(f"{self.ngsi}/entities/{eid}/attrs", headers=self._h(), content=json.dumps(attrs, default=_json_default)).status_code
 
@@ -351,7 +354,8 @@ def build_entities() -> list[dict]:
 
 
 def _parcel_geometries(ids: set) -> dict:
-    p = C.DATA / "06_nature" / "parcels.geojson"
+    from . import store
+    p = store.path("06_nature/parcels.geojson")
     out = {}
     for f in json.loads(p.read_text())["features"]:
         if f["properties"]["parcel_id"] in ids:
@@ -545,7 +549,8 @@ def listen(port: int = LISTEN_PORT, engine: LiveEngine | None = None):
 # ------------------------------------------------------------------------------ simulator
 @lru_cache(maxsize=1)
 def _weather_2026() -> pd.DataFrame:
-    w = pd.read_parquet(C.DATA / "04_climate" / "weather_daily_1991_2060.parquet",
+    from . import store
+    w = pd.read_parquet(store.path("04_climate/weather_daily_1991_2060.parquet"),
                         filters=[("scenario", "==", "historical")])
     return w[(w.date >= "2026-05-01") & (w.date <= "2026-08-31")]
 
@@ -573,17 +578,28 @@ def simulate(days: int = 123, start: str = "2026-05-01", speed: float = 0.0, pac
                 "potentialEvapotranspiration": prop(round(r.pet_mm, 2), "MMT", t)})
             time.sleep(pace)
         if meters and i % 10 == 9 and month <= 12:
-            m = em25[em25.month == month]
-            for r in m.itertuples():
-                ts = f"2025-{month:02d}-28T00:00:00Z"
-                b.append(urn("DeviceMeasurement", f"{r.site_id}:{r.carrier}"), {
-                    "numValue": prop(float(r.value), "MWH", ts, f"energy_meter_readings.csv {r.record_key}"), "dateObserved": prop(ts)})
-                time.sleep(pace)
-            print(f"  meters: replayed 2025-{month:02d} ({len(m)} readings)", flush=True)
+            replay_meter_month(month, b, pace, em25)
             month += 1
         if i % 7 == 0:
             print(f"{pd.Timestamp(d).date()} weather from {w[w.date == d].cell_id.nunique()} stations", flush=True)
         time.sleep(speed)
+
+
+def replay_meter_month(month: int, b: Broker | None = None, pace: float = 0.03, em25: pd.DataFrame | None = None) -> int:
+    """Send one month of the raw 2025 meter feed to the broker, one DeviceMeasurement per site and carrier."""
+    if em25 is None:
+        from .data import raw
+        em = raw()["energy_meter"]
+        em25 = em[em.year == 2025]
+    b = b or Broker()
+    m = em25[em25.month == month]
+    for r in m.itertuples():
+        ts = f"2025-{month:02d}-28T00:00:00Z"
+        b.append(urn("DeviceMeasurement", f"{r.site_id}:{r.carrier}"), {
+            "numValue": prop(float(r.value), "MWH", ts, f"energy_meter_readings.csv {r.record_key}"), "dateObserved": prop(ts)})
+        time.sleep(pace)
+    print(f"  meters: replayed 2025-{month:02d} ({len(m)} readings)", flush=True)
+    return len(m)
 
 
 def status(b: Broker | None = None) -> dict:

@@ -11,6 +11,7 @@ Outputs: C1 parcel yields 2027-2031, C2 risk 2041-2060 by SSP, C3 € exposure a
 """
 from __future__ import annotations
 
+import hashlib
 from functools import lru_cache
 
 import numpy as np
@@ -31,10 +32,14 @@ SITE = ["clay_pct", "organic_share", "coarse_share", "irrigated", "trend"]
 # ------------------------------------------------------------------------------ weather features
 @lru_cache(maxsize=1)
 def weather_features() -> pd.DataFrame:
-    cache = C.OUTPUTS / "cache" / "weather_features.parquet"
+    from . import store
+    src = store.path("04_climate/weather_daily_1991_2060.parquet")
+    st = src.stat()
+    tag = hashlib.sha1(f"{src}|{st.st_size}|{int(st.st_mtime)}".encode()).hexdigest()[:10]   # new weather delivery -> new cache
+    cache = C.OUTPUTS / "cache" / f"weather_features_{tag}.parquet"
     if cache.exists():
         return pd.read_parquet(cache)
-    w = pd.read_parquet(C.DATA / "04_climate" / "weather_daily_1991_2060.parquet")
+    w = pd.read_parquet(src)
     w["year"] = w.date.dt.year
     w["month"] = w.date.dt.month
     w["doy"] = w.date.dt.dayofyear
